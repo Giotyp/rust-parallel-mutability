@@ -3,15 +3,15 @@
 ## Problem Description
 
 Modifying a buffer in Rust using multiple threads could be a complex process.
-In the case of a simple counting problem, where all threads need to modify the same value, then a simple combination of **std::sync::{Arc, Mutex}** can be used. 
-However, when multiple threads need to modify separate buffer elements, this process adds excess latency, as threads need to wait for mutex access.
+In the case of a simple counting problem, where all threads need to modify the same value, a simple combination of **std::sync::{Arc, Mutex}** can be used. 
+However, when multiple threads need to modify separate elements, this process adds excess latency, as threads need to wait for mutex access.
 If we used **C**, we could easily utilize pointers to various buffer indexes, so that each thread could modify a different buffer section.
 Safe Rust prevents this solution, as it dictates that multiple immutable references to a value can be created but only a single mutable one.
 So, how do we design a safe and simple solution to modify different sections of a buffer in parallel?
 
 ## Proposed Solution
 
-Following a series of post named [Interior mutability in Rust](https://ricardomartins.cc/2016/06/08/interior-mutability), by Ricardo Martins, we can utilize **std::sync::Arc** for our purpose. 
+Following a series of posts named [Interior mutability in Rust](https://ricardomartins.cc/2016/06/08/interior-mutability), by Ricardo Martins, we can utilize **std::sync::RwLock** for our purpose. 
 By creating a buffer of type *Arc\<Vec\<RwLock\<T>>>* we can modify all elements of the vector concurrently, without having to explicitly call unsafe operations.
 
 
