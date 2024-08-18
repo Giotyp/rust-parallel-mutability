@@ -22,6 +22,10 @@ impl<T: GenType> AlignedVec<T> {
         &mut self.buffer
     }
 
+    pub fn as_mut_slice(&mut self) -> &mut [T] {
+        &mut self.buffer
+    }
+
 
     fn create_aligned_vec(size: usize, alignment: usize) -> Vec<T> {
         let mut ptr: *mut libc::c_void = std::ptr::null_mut();
