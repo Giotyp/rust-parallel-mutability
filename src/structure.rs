@@ -1,8 +1,8 @@
 use libc;
 use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
 
-pub trait GenType:  Clone + Default{}
-impl<T: Clone + Default> GenType for T{}
+pub trait GenType: Clone + Default {}
+impl<T: Clone + Default> GenType for T {}
 
 #[derive(Clone, Default)]
 pub struct AlignedVec<T: GenType> {
@@ -39,10 +39,10 @@ impl<T: GenType> AlignedVec<T> {
         &self.buffer
     }
 
-
     fn create_aligned_vec(size: usize, alignment: usize) -> Vec<T> {
         let mut ptr: *mut libc::c_void = std::ptr::null_mut();
-        let align_res = unsafe { libc::posix_memalign(&mut ptr, alignment, size * std::mem::size_of::<T>()) };
+        let align_res =
+            unsafe { libc::posix_memalign(&mut ptr, alignment, size * std::mem::size_of::<T>()) };
         if align_res != 0 {
             panic!("Failed to allocate aligned memory");
         }
@@ -64,16 +64,15 @@ impl<T: GenType> Drop for AlignedVec<T> {
     }
 }
 
-
 #[derive(Debug)]
 pub struct CRwLock<T>(RwLock<T>);
 
 impl<T: GenType> CRwLock<T> {
-    pub fn write(&self) -> RwLockWriteGuard<T> {
+    pub fn write(&self) -> RwLockWriteGuard<'_, T> {
         self.0.write().unwrap()
     }
 
-    pub fn read(&self) -> RwLockReadGuard<T> {
+    pub fn read(&self) -> RwLockReadGuard<'_, T> {
         self.0.read().unwrap()
     }
 
